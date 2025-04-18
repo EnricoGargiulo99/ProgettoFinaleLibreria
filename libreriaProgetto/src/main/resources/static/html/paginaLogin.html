@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Libreria Mancuso</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+    /*.navbar { background-color: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.05); padding: 1rem; }
+    .hidden { display: flex; }*/
+    #titolo{color: #6b4b3e}
+  </style>
+   
+  <script src="../js/libreriaProgetto.js"></script>
+  
+  <style >
+  #dettagliLibroModal{color: #6b4b3e;}
+  h5{color: #6b4b3e}
+  </style>
+  <link rel="stylesheet" href="../css/libreria.css">
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg sticky-top">
+  <div class="container-fluid px-4">
+    <a class="navbar-brand fw-bold fs-4" href='http://localhost:8080/html/libreria_online.html'>Libreria Mancuso</a>
+    <ul class="navbar-nav me-auto ms-3">
+      <li class="nav-item"><a class="nav-link" href='http://localhost:8080/html/libreria_online.html'>Home</a></li>
+    </ul>
+    <form class="d-flex me-3">
+      <input class="form-control me-2" type="search" placeholder="Cerca libri per titolo..." aria-label="Search" id="cercaLibroPulsante">
+      <button class="btn btn-outline-secondary" type="submit" onclick="cercaPerTitolo(event)" id="bottone-cerca"><i class="bi bi-search"></i></button>
+    </form>
+    <div class="dropdown" id="userDropdown">
+      <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" id="bottone-benvenuto">
+        Benvenuto <span id="usernameDisplay">Utente</span>
+      </button>
+      <ul class="dropdown-menu">
+        <li><a class="dropdown-item" href="http://localhost:8080/html/paginaLibri.html">La mia libreria</a></li>
+        <li><a class="dropdown-item" href="#" id="logoutBtnDropdown">Logout</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<div class="container mt-4" id="mainContent"></div>
+
+<!-- SEZIONE CONTENUTI -->
+<div class="container mt-4">
+  <div id="accountSection" class="hidden">
+    <h3 id="titolo">Il mio Account</h3>
+    <div id="accountView">
+      <ul class="list-group mb-3">
+        <li class="list-group-item"><strong>Nome:</strong> <span id="viewNome"></span></li>
+        <li class="list-group-item"><strong>Cognome:</strong> <span id="viewCognome"></span></li>
+        <li class="list-group-item"><strong>Indirizzo:</strong> <span id="viewIndirizzo"></span></li>
+        <li class="list-group-item"><strong>Codice Fiscale:</strong> <span id="viewCf"></span></li>
+        <li class="list-group-item"><strong>Username:</strong> <span id="viewUsername"></span></li>
+      </ul>
+      <div class="d-flex gap-2">
+        <button class="btn btn-warning" onclick="mostraFormModifica()">Modifica Account</button>
+        <button class="btn btn-danger" onclick="eliminaAccount()" id="logoutBtnDropdown">Elimina Account</button>
+      </div>
+    </div>
+    <form id="updateForm" class="hidden mt-4">
+      <h5>Modifica Dati</h5>
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label for="updNome" class="form-label">Nome</label>
+          <input type="text" id="updNome" class="form-control" required>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label for="updCognome" class="form-label">Cognome</label>
+          <input type="text" id="updCognome" class="form-control" required>
+        </div>
+      </div>
+      <div class="mb-3">
+        <label for="updIndirizzo" class="form-label">Indirizzo</label>
+        <input type="text" id="updIndirizzo" class="form-control" required>
+      </div>
+      <div class="mb-3">
+        <label for="updCf" class="form-label">Codice Fiscale</label>
+        <input type="text" id="updCf" class="form-control" required>
+      </div>
+      <div class="mb-3">
+        <label for="updPassword" class="form-label">Password</label>
+        <input type="password" id="updPassword" class="form-control" required>
+      </div>
+      <button class="btn btn-success" type="submit" onclick="modificaUtenteButt(event)">Salva modifiche</button>
+      <button type="button" class="btn btn-secondary ms-2" onclick="annullaModifica()">Annulla</button>
+    </form>
+  </div>
+
+  <div id="libriSection" class="hidden">
+    <h3>I miei Libri</h3>
+    <ul class="list-group">
+      <li class="list-group-item">📥 Aggiungi libro</li>
+      <li class="list-group-item">🗑️ Rimuovi libro</li>
+      <li class="list-group-item">📄 Visualizza elenco</li>
+      <li class="list-group-item">🔍 Cerca un libro</li>
+    </ul>
+  </div>
+</div>
+
+<!-- MODALI LOGIN E REGISTRAZIONE INVARIATE -->
+<div class="modal fade" id="loginModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form id="loginForm">
+        <div class="modal-header">
+          <h5 class="modal-title">Accedi</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <input type="text" id="loginUsername" class="form-control mb-3" placeholder="Username" required>
+          <input type="password" id="loginPassword" class="form-control mb-3" placeholder="Password" required>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">Accedi</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="registerModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form id="registerForm">
+        <div class="modal-header">
+          <h5 class="modal-title">Registrati</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <input type="text" id="nome" class="form-control mb-2" placeholder="Nome" required>
+          <input type="text" id="cognome" class="form-control mb-2" placeholder="Cognome" required>
+          <input type="text" id="indirizzo" class="form-control mb-2" placeholder="Indirizzo" required>
+          <input type="text" id="cf" class="form-control mb-2" placeholder="Codice Fiscale" required>
+          <input type="text" id="username" class="form-control mb-2" placeholder="Username" required>
+          <input type="password" id="password" class="form-control mb-2" placeholder="Password" required>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-success">Registrati</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+
+<!-- MODALE INFORMAZIONI -->
+<div class="modal fade" id="dettagliLibroModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalLabel">Dettagli Libro</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Chiudi" id="bottone-modale"></button>
+      </div>
+      <div class="modal-body">
+        <p><strong>Titolo:</strong> <span id="modaleTitolo"></span></p>
+        <p><strong>Autore:</strong> <span id="modaleAutore"></span></p>
+        <p><strong>Argomento:</strong> <span id="modaleArgomento"></span></p>
+        <p><strong>Editore:</strong> <span id="modaleEditore"></span></p>
+        <p><strong>Copie in libreria:</strong> <span id="modaleCopie"></span></p>
+        <p><strong>Copie disponibili:</strong> <span id="modaleCopieDisponibili"></span></p>
+      </div>
+      <div class="modal-footer">
+      	<button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="mostraSezione('formPrenota')" id="bottone-modale">Vai a prenotazione</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="bottone-modale">Chiudi</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+const authButtons = document.getElementById('authButtons');
+const userDropdown = document.getElementById('userDropdown');
+const usernameDisplay = document.getElementById('usernameDisplay');
+const logoutBtnDropdown = document.getElementById('logoutBtnDropdown');
+const registerForm = document.getElementById('registerForm');
+const loginForm = document.getElementById('loginForm');
+const updateForm = document.getElementById('updateForm');
+const mainContent = document.getElementById('mainContent');
+let currentUserData = null;
+
+	document.addEventListener('DOMContentLoaded', function () {
+	    // Recupero i dati salvati nel sessionStorage
+	    const storedUsername = sessionStorage.getItem('utente');
+	    let utente = cercaUtente(storedUsername);
+  	  		utente.then(response => {
+  		    // Verifica se la risposta è ok
+  		    if (!response.ok) {
+				window.location.href = 'http://localhost:8080/html/libreria_online.html'
+  		    }
+  		  	return response.json();
+  		  	})
+  	    	.then(data => {
+  	      sessionStorage.setItem('logout', false);
+  	    let ans=sessionStorage.getItem("modifica");
+	    if(ans!="none"){
+	    	showAlert(ans, 'secondary');
+	    }
+	    sessionStorage.setItem("modifica", "none");
+  		  currentUserData = data;
+  	      document.getElementById('accountSection').classList.remove('hidden');
+  	      document.getElementById('libriSection').classList.add('hidden');
+  	      document.getElementById('accountView').classList.remove('hidden');
+  	      document.getElementById('updateForm').classList.add('hidden');
+  	      document.getElementById('viewNome').textContent = data.nome;
+  	      document.getElementById('viewCognome').textContent = data.cognome;
+  	      document.getElementById('viewIndirizzo').textContent = data.indirizzo;
+  	      document.getElementById('viewCf').textContent = data.cf;
+  	      document.getElementById('viewUsername').textContent = data.username;
+  	      document.getElementById('updNome').value = data.nome;
+  	      document.getElementById('updCognome').value = data.cognome;
+  	      document.getElementById('updIndirizzo').value = data.indirizzo;
+  	      document.getElementById('updCf').value = data.cf;
+  	      document.getElementById('updPassword').value = data.password;
+  	      usernameDisplay.textContent=currentUserData.username;
+  	      })
+  	    .catch(error => {console.log("Errore nella fetch:", error)});
+  	  		
+  	  	console.log(storedUsername);
+	});
+	</script>
+
+<script>
+ 
+  function mostraFormModifica() {
+    document.getElementById('accountView').classList.add('hidden');
+    document.getElementById('updateForm').classList.remove('hidden');
+  }
+
+  function annullaModifica() {
+    window.location.href='http://localhost:8080/html/paginalogin.html'
+    
+  }
+
+  async function eliminaAccount() {
+    if (confirm("Sei sicuro di voler eliminare il tuo account?")) {
+	  let nLibri=await visualizzaLibriUtente();
+	  if(nLibri==0){
+	      await cancellaUtente(event);
+	      sessionStorage.removeItem('utente');
+	      sessionStorage.setItem('logout', "eliminato");
+	      currentUserData = null;
+	      window.location.href = 'http://localhost:8080/html/libreria_online.html'
+	  }
+	  else{
+		  showAlert("Prima devi restituire i libri.", 'danger');
+	  }
+
+    }
+  }
+  
+  async function modificaUtenteButt(event){
+	  await modificaUtente(event);
+	  window.location.href='http://localhost:8080/html/paginalogin.html';
+  }
+
+
+  logoutBtnDropdown.addEventListener('click', function () {
+    sessionStorage.removeItem('utente');
+    sessionStorage.setItem('logout', true);
+    currentUserData = null;
+    window.location.href = 'http://localhost:8080/html/libreria_online.html'
+  });
+  
+  function showAlert(message, type) {
+      const alert = document.createElement('div');
+      alert.className = `alert alert-${type} alert-dismissible fade show mt-3`;
+      alert.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      `;
+      const container = document.getElementById('mainContent');
+      container.prepend(alert);
+      
+      // Chiudi automaticamente l'alert dopo 4 secondi
+      setTimeout(() => {
+        alert.classList.remove('show');
+        alert.classList.add('hide');
+        setTimeout(() => alert.remove(), 200); // Rimuovi completamente dopo l'animazione
+      }, 3000);
+  }
+  
+ async function visualizzaLibriUtente() {
+
+	  try {
+	    const response = await fetch("http://localhost:8080/gestione");
+	    const gestione = await response.json();
+		
+	   	const user = sessionStorage.getItem("utente");
+	    let libri=[];
+	    let k=0;
+	    for (let i = 0; i < gestione.length; i++) {
+			let utenteGestione=gestione[i].utente.username;
+	    	if(utenteGestione==user){
+				libri[k]=gestione[i].libro;
+				k=k+1;
+			}
+	    }
+	    
+	   	return libri.length;
+	  } catch (error) {
+	    console.error("Errore nel recupero dei libri:", error);
+	  }
+	} 
+</script>
+</body>
+</html>
